@@ -6,14 +6,10 @@ import com.user.service.UserService.model.Hotel;
 import com.user.service.UserService.model.Rating;
 import com.user.service.UserService.repository.UserRepository;
 import com.user.service.UserService.service.UserService;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,18 +30,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUsers() {
-        long l = System.nanoTime();
         List<User> userList = userRepository.findAll();
         userList.stream().forEach(user -> {
             Rating[] ratingArray = restTemplate.getForObject(GET_RATINGS_BY_USER + user.getUserId(), Rating[].class);
             List<Rating> ratings = Arrays.asList(ratingArray);
-            ratings.stream().forEach(rating -> {
-                rating.setHotel(restTemplate.getForEntity(GET_HOTEL_BY_ID + rating.getHotelId(), Hotel.class).getBody());
-            });
+            ratings.stream().forEach(rating ->
+                rating.setHotel(restTemplate.getForEntity(GET_HOTEL_BY_ID + rating.getHotelId(), Hotel.class).getBody())
+            );
             user.setRatings(ratings);
         });
-        long m = System.nanoTime();
-        System.out.println(m-l);
         return userList;
     }
 
@@ -54,9 +47,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with given id is not found: " + userId));
         Rating[] ratingArray = restTemplate.getForObject(GET_RATINGS_BY_USER + user.getUserId(), Rating[].class);
         List<Rating> ratings = Arrays.asList(ratingArray);
-        ratings.stream().forEach(rating -> {
-            rating.setHotel(restTemplate.getForEntity(GET_HOTEL_BY_ID + rating.getHotelId(), Hotel.class).getBody());
-        });
+        ratings.stream().forEach(rating ->
+            rating.setHotel(restTemplate.getForEntity(GET_HOTEL_BY_ID + rating.getHotelId(), Hotel.class).getBody())
+        );
         user.setRatings(ratings);
         return user;
     }
