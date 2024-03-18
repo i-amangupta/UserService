@@ -20,7 +20,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(user));
     }
 
-    @GetMapping("/getAllUsers")
+    @GetMapping("/getAllUsers123")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
